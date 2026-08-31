@@ -1,0 +1,33 @@
+User-agent: *
+Allow: /
+
+# Answer and generative engines are explicitly welcome: this site is
+# meant to be quotable, and the content is written to be lifted.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://innov8-workflows.github.io/E-Stewart-Roofing/sitemap.xml
