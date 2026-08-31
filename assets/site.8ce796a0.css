@@ -857,3 +857,49 @@ table.tbl td:first-child{font-weight:600;color:var(--ink)}
 
 /* the carousel's previous button reuses the chevron icon, mirrored */
 .ic--flip{transform:scaleX(-1)}
+
+/* ============================================================
+   GOOGLE-BRANDED REVIEWS
+   The four-colour G is Google's mark, used here only to attribute
+   reviews that genuinely come from Google.
+   ============================================================ */
+.g-mark{width:20px;height:20px;flex:none;display:block}
+.btn .g-mark{width:18px;height:18px}
+
+/* "Rated 4.9 ***** on Google" pill */
+.gpill{
+  display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+  background:var(--white);border:1px solid var(--line);border-radius:100px;
+  padding:9px 18px;margin-top:16px;box-shadow:var(--shadow);
+  font-size:.94rem;color:var(--ink);
+}
+.gpill .g-mark{width:19px;height:19px}
+.gpill b{font-family:'Barlow';font-weight:800;font-size:1.02rem}
+.gpill .rv__stars{gap:1px}
+.gpill .rv__stars .ic{width:15px;height:15px}
+
+/* card header: Google mark left, stars right */
+.rv__top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+
+/* platform links under the carousel */
+.rvlinks{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  flex-wrap:wrap;margin-top:26px;
+}
+.rvlinks .btn{gap:9px}
+.rvlink{
+  display:inline-flex;align-items:center;gap:9px;
+  background:var(--white);border:1px solid var(--line);border-radius:100px;
+  padding:13px 20px;font-family:'Barlow';font-weight:700;font-size:.92rem;
+  color:var(--ink);min-height:48px;transition:border-color .18s,background .18s;
+}
+.rvlink:hover{border-color:var(--ink);background:var(--bg-2)}
+.rvlink .ic{width:17px;height:17px;color:#1877F2}
+
+.rvmore{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:'Barlow';font-weight:700;font-size:.9rem;color:var(--gold-dp);
+  min-height:44px;
+}
+.rvmore .ic{width:15px;height:15px}
+.rvmore:hover{text-decoration:underline}
