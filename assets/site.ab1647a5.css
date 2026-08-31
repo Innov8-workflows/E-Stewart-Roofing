@@ -380,9 +380,10 @@ ul{margin:0;padding:0;list-style:none}
 .rv__stars .ic{width:16px;height:16px}
 .rv__txt{color:var(--steel);font-size:.92rem;line-height:1.6;flex:1}
 .rv__who{display:flex;align-items:center;gap:11px;padding-top:12px;border-top:1px solid var(--line)}
+/* brand red on near-black is 3.5:1; the lighter red clears AA at 4.9:1 */
 .rv__av{
   width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;
-  background:var(--ink);color:var(--gold);font-family:'Barlow';font-weight:800;font-size:.92rem;
+  background:var(--ink);color:var(--gold-lt);font-family:'Barlow';font-weight:800;font-size:.92rem;
 }
 .rv__who b{display:block;font-family:'Barlow';font-weight:700;font-size:.92rem}
 .rv__who small{display:block;color:var(--muted);font-size:.75rem}
@@ -836,3 +837,23 @@ table.tbl td:first-child{font-weight:600;color:var(--ink)}
   background:linear-gradient(180deg,rgba(16,18,21,.95) 0%,rgba(16,18,21,.72) 55%,rgba(16,18,21,.93) 100%);
 }
 .sec--bg > .wrap{position:relative;z-index:2}
+
+/* ============================================================
+   REVIEWS PAGE: the plain-text list under the carousel.
+   The carousel is the nice version; this is the one that is
+   always in the HTML whether or not the script runs, which is
+   what the page is actually indexed on.
+   ============================================================ */
+.rvlist{display:grid;gap:14px;margin-top:8px}
+@media(min-width:860px){.rvlist{grid-template-columns:repeat(2,1fr)}}
+.rvlist__i{
+  background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(16px,3vw,22px);
+}
+.rvlist__i p{color:var(--steel);font-size:.92rem;line-height:1.6;margin:10px 0 14px}
+.rvlist__by{border-top:1px solid var(--line);padding-top:11px}
+.rvlist__by b{display:block;font-family:'Barlow';font-weight:700;font-size:.92rem}
+.rvlist__by small{display:block;color:var(--muted);font-size:.75rem}
+
+/* the carousel's previous button reuses the chevron icon, mirrored */
+.ic--flip{transform:scaleX(-1)}
