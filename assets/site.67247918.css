@@ -575,14 +575,19 @@ ul{margin:0;padding:0;list-style:none}
 
 /* page header band, sits under the navbar in place of the hero */
 .phead{position:relative;background:var(--ink);color:#fff;isolation:isolate;overflow:hidden}
-.phead__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.34;z-index:0}
+.phead__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;z-index:0}
 .phead::after{
   content:"";position:absolute;inset:0;z-index:1;
-  background:linear-gradient(180deg,rgba(16,18,21,.86),rgba(16,18,21,.7) 45%,rgba(16,18,21,.94));
+  /* Scrim cut 35% and the image lifted from .34, because the header photo was
+     effectively invisible: 34% over near-black under an 86% overlay. */
+  background:linear-gradient(180deg,rgba(16,18,21,.56),rgba(16,18,21,.46) 45%,rgba(16,18,21,.61));
 }
 .phead__in{position:relative;z-index:2;padding-block:clamp(26px,4.6vw,54px) clamp(30px,4.6vw,58px)}
 .phead h1{font-size:clamp(1.75rem,5.6vw,3rem);text-wrap:balance;max-width:20ch}
-.phead__sub{margin-top:12px;color:#C3C9D1;font-size:clamp(.95rem,2.5vw,1.12rem);max-width:60ch;text-wrap:balance}
+/* Lifted from #C3C9D1 when the header scrim was cut 35%: against the brightest
+   header photo (g6) the old grey fell to 4.2:1. This holds 5.1:1 there and still
+   sits clearly below the h1. */
+.phead__sub{margin-top:12px;color:#D6DCE4;font-size:clamp(.95rem,2.5vw,1.12rem);max-width:60ch;text-wrap:balance}
 .phead__cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 .phead__cta .btn{flex:1 1 auto;min-width:150px;max-width:250px}
 @media(min-width:760px){.phead__cta .btn{flex:0 0 auto}}
