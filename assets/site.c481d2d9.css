@@ -810,3 +810,24 @@ table.tbl td:first-child{font-weight:600;color:var(--ink)}
 .sec--dark{--white:#181B20}
 /* .tf__pill hardcodes --steel, which is a light-theme value. */
 .sec--dark .tf__pill{color:var(--muted)}
+
+
+/* ============================================================
+   SECTION PHOTO BACKGROUND
+   Pairs with .sec--dark: the image sits under a scrim heavy enough that the
+   white text clears AA even over the brightest part of the photo.
+   ============================================================ */
+.sec--bg{position:relative;isolation:isolate;overflow:hidden}
+.sec--bg > .sec__bg{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:.55;z-index:0;
+}
+.sec--bg::after{
+  content:"";position:absolute;inset:0;z-index:1;
+  /* Sized from g4's own histogram (p90 = 227, max 255): even a pure white
+     source pixel composites to about 39/255 on the eyebrow row and 40/255 on
+     the note, which is what the red accent needs to clear 4.5:1. Measured off
+     the rendered pixels, not calculated: see the scrim comment in the README. */
+  background:linear-gradient(180deg,rgba(16,18,21,.92) 0%,rgba(16,18,21,.72) 55%,rgba(16,18,21,.92) 100%);
+}
+.sec--bg > .wrap{position:relative;z-index:2}
