@@ -47,6 +47,25 @@ ul{margin:0;padding:0;list-style:none}
 .wrap{width:min(1180px,100% - (var(--gut)*2));margin-inline:auto}
 .sec{padding-block:var(--sp)}
 .sec--tint{background:var(--bg-2)}
+/* Dark band. Flips the palette tokens for its whole subtree rather than
+   restyling each component, so cards, borders, muted text and icons all
+   follow. The background must be a literal: --ink is redefined on this same
+   element, so var(--ink) here would resolve to the NEW (light) value. */
+.sec--dark{
+  background:#101215;
+  color:#F2F4F7;
+  --ink:#F2F4F7;
+  --muted:#A6ADB8;            /* 8.3:1 on the band */
+  --line:rgba(255,255,255,.13);
+  --bg:#101215;
+  --bg-2:#181B20;
+  --bg-3:#22262C;
+  --gold-dp:#F16364;          /* the on-white deep red is unreadable here: 6.0:1 */
+  --shadow:none;
+  --shadow-lg:0 18px 48px rgba(0,0,0,.45);
+}
+.sec--dark .btn--dark{background:var(--gold);color:#fff}
+.sec--dark .btn--dark:hover{background:var(--gold-lt)}
 .eyebrow{
   font-family:'Barlow';font-weight:700;font-size:.75rem;letter-spacing:.16em;
   text-transform:uppercase;color:var(--gold-dp);margin-bottom:10px;
@@ -771,3 +790,23 @@ table.tbl td:first-child{font-weight:600;color:var(--ink)}
   color:var(--ink);line-height:1.2;
 }
 .team__m small{display:block;margin-top:3px;font-size:.8rem;color:var(--muted)}
+
+/* ============================================================
+   CONTRAST FIXES
+   ============================================================ */
+
+/* Red is not dark enough to carry near-black text: #101215 on #CC2A2B is
+   3.5:1, under the 4.5:1 these need at 15-16px. White gives 5.3:1. */
+.btn--gold,.nav__call,.skip{color:#fff}
+.btn--gold .ic,.nav__call .ic{color:#fff}
+
+/* The dark sidebar panel inherited the light theme's muted grey: 3.7:1 on
+   the panel. */
+.panel--dark p{color:#B9C0CA}
+
+/* Components that carry their own literal white background sit inside the
+   dark bands too, so the band remaps --white as well. Without this,
+   .why__c and .areas li stay white while their text turns near-white. */
+.sec--dark{--white:#181B20}
+/* .tf__pill hardcodes --steel, which is a light-theme value. */
+.sec--dark .tf__pill{color:var(--muted)}
