@@ -23,6 +23,34 @@
     window.gtag('config', gaId);
   }
 
+  /* ---- conversion events ----
+     Matched on the href, NOT on a data-track attribute. Three links on the
+     site were missing the attribute, including the WhatsApp float, which is
+     one of the busiest paths on a trade site. Matching the destination means
+     a new link cannot be added untracked.
+
+     Delegated from document so it also covers anything rendered later.
+     GA4 sends these over the Beacon API, so navigating away does not lose
+     them and there is no need to delay the click. */
+  var ev = function (name, params) {
+    if (window.gtag) window.gtag('event', name, params || {});
+  };
+
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    var label = (a.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+
+    if (/^tel:/i.test(href)) {
+      ev('click_to_call', { link_url: href, link_text: label, method: 'phone' });
+    } else if (/(^https?:)?\/\/(wa\.me|api\.whatsapp\.com)/i.test(href)) {
+      ev('click_whatsapp', { link_url: href, link_text: label, method: 'whatsapp' });
+    } else if (/^mailto:/i.test(href)) {
+      ev('click_email', { link_url: href, link_text: label, method: 'email' });
+    }
+  }, true);
+
   /* ---- current year in the footer ---- */
   var yr = $('#yr');
   if (yr) yr.textContent = new Date().getFullYear();
@@ -157,6 +185,15 @@
       if (val('area')) lines.push('Area: ' + val('area'));
       if (val('job')) lines.push('Job: ' + val('job'));
       if (val('message')) lines.push('', 'Details: ' + val('message'));
+      /* Fired before the redirect. GA4 uses the Beacon API, so it survives
+         the navigation; the alternative, delaying the redirect on a callback,
+         costs the user time and drops the lead if the callback never fires. */
+      ev('generate_lead', {
+        method: 'whatsapp_form',
+        form_id: 'quoteForm',
+        job_type: val('job') || '(not given)',
+        area: val('area') || '(not given)'
+      });
       window.location.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(lines.join('\n'));
     });
   }
