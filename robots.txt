@@ -30,4 +30,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://innov8-workflows.github.io/E-Stewart-Roofing/sitemap.xml
+Sitemap: https://www.estewartroofingltd.co.uk/sitemap.xml
