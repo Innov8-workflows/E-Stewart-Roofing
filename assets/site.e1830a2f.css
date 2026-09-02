@@ -932,7 +932,13 @@ table.tbl td:first-child{font-weight:600;color:var(--ink)}
   color:var(--ink);min-height:48px;transition:border-color .18s,background .18s;
 }
 .rvlink:hover{border-color:var(--ink);background:var(--bg-2)}
-.rvlink .ic{width:17px;height:17px;color:#1877F2}
+/* Size on the ELEMENT, not on .ic. The official Facebook mark is <svg class="fmark">
+   and carries no .ic class, so an .ic-scoped rule missed it entirely and the link
+   rendered at 99px tall with an ink-black logo. */
+.rvlink svg{width:17px;height:17px;flex:none}
+/* per-platform, so the Facebook blue does not leak onto every other mark */
+.rvlink--facebook svg{color:#1877F2}
+.rvlink--mybuilder .ic{color:var(--gold-dp)}
 
 .rvmore{
   display:inline-flex;align-items:center;gap:7px;
