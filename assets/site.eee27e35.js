@@ -185,6 +185,11 @@
       if (val('area')) lines.push('Area: ' + val('area'));
       if (val('job')) lines.push('Job: ' + val('job'));
       if (val('message')) lines.push('', 'Details: ' + val('message'));
+      /* Where it came from, so this is distinguishable from a message sent
+         straight to the number. The label is written into data-src at build
+         time rather than hardcoded here, so the domain lives in data.js. */
+      var src = form.getAttribute('data-src');
+      if (src) lines.push('', 'Sent from ' + src);
       /* Fired before the redirect. GA4 uses the Beacon API, so it survives
          the navigation; the alternative, delaying the redirect on a callback,
          costs the user time and drops the lead if the callback never fires. */
