@@ -515,6 +515,12 @@ ul{margin:0;padding:0;list-style:none}
 .ft a:hover{color:var(--gold-lt)}
 .ft__li{display:flex;flex-direction:column}
 .ft__li a{display:flex;align-items:center;min-height:44px}
+/* Footer numbers. Mobile first, landline second, matching every other
+   call-to-action on the site. 44px min target so both are tappable. */
+.ft__tel{display:flex;flex-wrap:wrap;gap:6px 20px;margin-top:12px}
+.ft__tel a{display:inline-flex;align-items:center;gap:8px;min-height:44px;
+  color:#fff;font-weight:700;font-size:.92rem}
+.ft__tel .ic{width:16px;height:16px;color:var(--gold-lt);flex:none}
 .ft__soc{display:flex;gap:9px;margin-top:14px}
 .ft__soc a{
   width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.08);
