@@ -229,6 +229,11 @@ ul{margin:0;padding:0;list-style:none}
 /* COLOR, not fill: the Facebook path is fill="currentColor". A fill rule on
    the svg never reaches it and the mark renders ink black. */
 .cred--facebook .cred__m{color:#1877F2}
+/* MyBuilder has no clean library logo, so it carries a Lucide glyph and its
+   name in text rather than a traced approximation. Deep brand red keeps it
+   deliberate next to the two real brand marks. */
+.cred--mybuilder .cred__m{color:var(--gold-dp)}
+.cred--mybuilder .cred__m svg{width:20px;height:20px}
 .cred__t b{display:block;font-family:'Barlow';font-weight:800;font-size:.86rem;line-height:1.15}
 .cred__t small{display:block;color:var(--muted);font-size:.74rem;line-height:1.3;margin-top:1px}
 @media(min-width:560px){
