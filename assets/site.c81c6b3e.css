@@ -266,6 +266,15 @@ ul{margin:0;padding:0;list-style:none}
 }
 .svc__ico .ic{width:18px;height:18px}
 .svc__c h3{font-size:clamp(.95rem,2.9vw,1.16rem);line-height:1.2}
+/* THE WHOLE CARD IS THE TAP TARGET. The link was the title text only - 18px
+   tall on a card that plainly looks tappable, which is a miss on a phone every
+   time. The pseudo-element stretches the existing anchor over the card, so
+   there is still exactly ONE link and one accessible name; no nested anchors
+   and nothing extra for a screen reader to read out. */
+.svc__c{position:relative}
+.svc__c h3 a::after{content:"";position:absolute;inset:0;border-radius:inherit}
+/* keep any genuinely separate control above the overlay */
+.svc__c a:not(h3 a){position:relative;z-index:1}
 .svc__c p{color:var(--muted);font-size:clamp(.78rem,2.2vw,.92rem);line-height:1.45}
 @media(min-width:900px){
   .svc{grid-template-columns:repeat(3,1fr);gap:16px}
@@ -988,3 +997,7 @@ table.tbl td:first-child{font-weight:600;color:var(--ink)}
   .faqs-tight .prose h2{font-size:1.12rem}
   .faqs-tight .prose p{font-size:.86rem}
 }
+
+
+/* FAQ jump chips: 38px measured, under the 44px guidance. */
+.jump a{min-height:44px;padding:10px 14px}
