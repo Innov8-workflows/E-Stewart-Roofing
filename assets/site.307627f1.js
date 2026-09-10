@@ -431,6 +431,7 @@
   var count = quiz.querySelector('[data-quiz-count]');
   var back = quiz.querySelector('[data-quiz-back]');
   var nameEl = quiz.querySelector('[data-quiz-name]');
+  var phoneEl = quiz.querySelector('[data-quiz-phone]');
   var sumEl = quiz.querySelector('[data-quiz-summary]');
   var TOTAL = steps.length;
   var current = 1;
@@ -450,11 +451,13 @@
 
   function message() {
     var name = nameEl ? nameEl.value.trim() : '';
+    var phone = phoneEl ? phoneEl.value.trim() : '';
     var lines = ['Hello E Stewart Roofing, I would like a free quote.', ''];
     if (answers.work) lines.push('Job: ' + answers.work);
     if (answers.property) lines.push('Property: ' + answers.property);
     if (answers.urgency) lines.push('Timing: ' + answers.urgency);
     if (name) lines.push('Name: ' + name);
+    if (phone) lines.push('Phone: ' + phone);
     lines.push('', 'Sent from the ad landing page on estewartroofingltd.co.uk');
     return lines.join('\n');
   }
@@ -488,10 +491,12 @@
 
   if (back) back.addEventListener('click', function () { show(current - 1); });
   if (nameEl) nameEl.addEventListener('input', render);
+  if (phoneEl) phoneEl.addEventListener('input', render);
 
   Array.prototype.forEach.call(quiz.querySelectorAll('[data-quiz-send]'), function (btn) {
     btn.addEventListener('click', function () {
       var name = nameEl ? nameEl.value.trim() : '';
+      var phone = phoneEl ? phoneEl.value.trim() : '';
       var parts = [];
       if (answers.work) parts.push('Job: ' + answers.work);
       if (answers.property) parts.push('Property: ' + answers.property);
@@ -500,10 +505,12 @@
         window.sendLead({
           type: 'Quote funnel',
           name: name,
-          /* The visitor's own number is never captured: the funnel hands off to
-             WhatsApp or SMS, so the reply comes from their handset. Left blank
-             deliberately rather than sending the client his own number. */
-          phone: '',
+          /* OPTIONAL, and usually empty: the funnel hands off to WhatsApp so the
+             reply comes from the visitor's own handset. It is captured when
+             given as a fallback for the ones who never press send in WhatsApp.
+             It is the VISITOR's number - never the client's, which is what a
+             tel: tap would carry. */
+          phone: phone,
           service: answers.work,
           details: parts.join(' | '),
           source: 'ad landing page'
