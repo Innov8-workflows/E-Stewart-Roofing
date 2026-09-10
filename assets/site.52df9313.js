@@ -15,12 +15,87 @@
      The loader tag itself is external, so it only needs the host allowlisting.
      dataLayer queues, so config order against the async loader does not
      matter. */
-  var gaId = document.documentElement.getAttribute('data-ga');
-  if (gaId) {
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () { window.dataLayer.push(arguments); };
-    window.gtag('js', new Date());
-    window.gtag('config', gaId);
+  var root = document.documentElement;
+  var gaId = root.getAttribute('data-ga');
+  var pxId = root.getAttribute('data-pixel');
+
+  /* The ad landing page carries a consent bar; the rest of the site does not.
+     Where one is PRESENT, nothing measuring runs until it is accepted - which
+     is the whole point of showing it. Where it is absent this behaves exactly
+     as before and GA4 starts immediately. */
+  var gate = document.getElementById('cc');
+  var KEY = 'es-consent';
+  var started = false;
+
+  function startTrackers() {
+    if (started) return;
+    started = true;
+    if (gaId) {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', gaId);
+      /* The 46 pages built through lib.head() already carry the gtag.js loader
+         in the head, so only add it where it is missing.
+
+         It IS missing on the self-contained pages, which build their own head:
+         /review/ declared data-ga and had no loader, so site.js queued into
+         dataLayer and nothing ever flushed it - that page reported ZERO from
+         the day it shipped. Appending it here fixes /review/ as well as /lp/. */
+      if (!document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) {
+        var g = document.createElement('script');
+        g.async = true;
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+        document.head.appendChild(g);
+      }
+    }
+    /* Meta pixel. Skipped entirely when the id is empty rather than emitting a
+       broken snippet, so the page ships safely before the client supplies one. */
+    if (pxId) {
+      /* eslint-disable */
+      !function (f, b, e, v, n, t, s2) {
+        if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+        if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+        t = b.createElement(e); t.async = !0; t.src = v;
+        s2 = b.getElementsByTagName(e)[0]; s2.parentNode.insertBefore(t, s2);
+      }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      /* eslint-enable */
+      window.fbq('init', pxId);
+      window.fbq('track', 'PageView');
+    }
+  }
+
+  /* Queued until consent lands, then flushed, so an event fired during the
+     banner is not simply lost. */
+  var q = [];
+  window.track = function (name, params) {
+    if (!started) { q.push([name, params]); return; }
+    if (window.gtag) window.gtag('event', name, params || {});
+    if (window.fbq) {
+      var STD = { Lead: 1, Contact: 1, PageView: 1 };
+      window.fbq(STD[name] ? 'track' : 'trackCustom', name, params || {});
+    }
+  };
+  function flush() { var c = q.slice(); q.length = 0; c.forEach(function (e) { window.track(e[0], e[1]); }); }
+
+  if (gate) {
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    if (stored === 'yes') { startTrackers(); flush(); }
+    else if (stored !== 'no') { gate.hidden = false; document.body.classList.add('cc-open'); }
+    gate.addEventListener('click', function (e) {
+      var b = e.target && e.target.closest ? e.target.closest('[data-cc]') : null;
+      if (!b) return;
+      var yes = b.getAttribute('data-cc') === 'yes';
+      try { localStorage.setItem(KEY, yes ? 'yes' : 'no'); } catch (e2) {}
+      gate.hidden = true;
+      document.body.classList.remove('cc-open');
+      if (yes) { startTrackers(); flush(); }
+      else { q.length = 0; }
+    });
+  } else {
+    startTrackers();
+    flush();
   }
 
   /* ---- conversion events ----
@@ -39,6 +114,10 @@
   document.addEventListener('click', function (e) {
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
     if (!a) return;
+    /* The quiz send buttons are wa.me and sms: links. Without this they fire
+       click_whatsapp AS WELL AS the funnel's own Lead event, double counting
+       one conversion in GA4 and in Meta. Same trap as the lead beacon below. */
+    if (a.hasAttribute('data-quiz-send')) return;
     var href = a.getAttribute('href') || '';
     var label = (a.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 60);
 
@@ -188,7 +267,9 @@
       /* Where it came from, so this is distinguishable from a message sent
          straight to the number. The label is written into data-src at build
          time rather than hardcoded here, so the domain lives in data.js. */
-      var src = form.getAttribute('data-src');
+      /* Named data-from, NOT data-src: check.js scans for src=" to find assets and
+         would read this label as a file path and report a dead link. */
+      var src = form.getAttribute('data-from');
       if (src) lines.push('', 'Sent from ' + src);
       /* Fired before the redirect. GA4 uses the Beacon API, so it survives
          the navigation; the alternative, delaying the redirect on a callback,
@@ -265,11 +346,18 @@
     return 'page';
   }
 
+  /* Exposed so the quiz can log a completion with its own answers. */
+  window.sendLead = send;
+
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
     var a = t.closest('a[href]');
     if (!a) return;
+    /* The quiz send buttons are wa.me and sms: links, so this listener would
+       log the same lead a second time as a plain WhatsApp click. The quiz
+       reports its own completion, with the answers attached. */
+    if (a.hasAttribute('data-quiz-send')) return;
     var h = a.getAttribute('href') || '';
 
     if (h.indexOf('tel:') === 0) {
@@ -304,4 +392,142 @@
       source: where(f)
     });
   }, true);
+})();
+
+
+/* ============================================================
+   AD LANDING PAGE  (/lp/)
+   Guarded on [data-quiz], so none of this runs on the 46 normal pages.
+   ============================================================ */
+(function () {
+  'use strict';
+  var quiz = document.querySelector('[data-quiz]');
+
+  /* footer year and reveal-on-scroll are cheap and harmless anywhere */
+  var y = document.querySelector('[data-year]');
+  if (y) y.textContent = new Date().getFullYear();
+
+  var ups = document.querySelectorAll('.up');
+  if (ups.length) {
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+      Array.prototype.forEach.call(ups, function (el) { io.observe(el); });
+    } else {
+      /* No observer: show everything rather than leave the page blank. */
+      Array.prototype.forEach.call(ups, function (el) { el.classList.add('in'); });
+    }
+  }
+
+  if (!quiz) return;
+
+  var root = document.documentElement;
+  var WA = root.getAttribute('data-wa') || '';
+  var SMS = root.getAttribute('data-sms') || '';
+
+  var steps = quiz.querySelectorAll('.qstep');
+  var fill = quiz.querySelector('[data-quiz-fill]');
+  var count = quiz.querySelector('[data-quiz-count]');
+  var back = quiz.querySelector('[data-quiz-back]');
+  var nameEl = quiz.querySelector('[data-quiz-name]');
+  var sumEl = quiz.querySelector('[data-quiz-summary]');
+  var TOTAL = steps.length;
+  var current = 1;
+  var KEYS = ['work', 'property', 'urgency'];
+  var answers = { work: '', property: '', urgency: '' };
+
+  function show(n) {
+    current = Math.min(Math.max(n, 1), TOTAL);
+    Array.prototype.forEach.call(steps, function (s) {
+      s.classList.toggle('on', Number(s.getAttribute('data-step')) === current);
+    });
+    if (fill) fill.style.width = (current / TOTAL * 100) + '%';
+    if (count) count.textContent = 'Step ' + current + ' of ' + TOTAL;
+    if (back) back.hidden = current === 1;
+    if (current === TOTAL) render();
+  }
+
+  function message() {
+    var name = nameEl ? nameEl.value.trim() : '';
+    var lines = ['Hello E Stewart Roofing, I would like a free quote.', ''];
+    if (answers.work) lines.push('Job: ' + answers.work);
+    if (answers.property) lines.push('Property: ' + answers.property);
+    if (answers.urgency) lines.push('Timing: ' + answers.urgency);
+    if (name) lines.push('Name: ' + name);
+    lines.push('', 'Sent from the ad landing page on estewartroofingltd.co.uk');
+    return lines.join('\n');
+  }
+
+  function render() {
+    if (sumEl) {
+      sumEl.textContent = 'Your answers: ' + KEYS.map(function (k) { return answers[k]; })
+        .filter(Boolean).join('  |  ');
+    }
+    var text = encodeURIComponent(message());
+    var wa = quiz.querySelector('[data-quiz-send="whatsapp"]');
+    var sms = quiz.querySelector('[data-quiz-send="sms"]');
+    if (wa) wa.href = 'https://wa.me/' + WA + '?text=' + text;
+    /* iOS wants the body after an ampersand, Android after a question mark.
+       "?&body=" is the one form both accept. */
+    if (sms) sms.href = 'sms:' + SMS + '?&body=' + text;
+  }
+
+  quiz.addEventListener('click', function (e) {
+    var opt = e.target && e.target.closest ? e.target.closest('.opt') : null;
+    if (!opt) return;
+    var step = Number(opt.closest('.qstep').getAttribute('data-step'));
+    answers[KEYS[step - 1]] = opt.getAttribute('data-val') || '';
+    /* Drop-off is the whole point of measuring this page. The lead sheet only
+       ever sees completions, so without a per-step event there is no way to
+       know the quiz is losing people at, say, the property question. */
+    if (step === 1 && window.track) window.track('funnel_start', { answer: answers.work });
+    if (window.track) window.track('funnel_step', { step: step, answer: answers[KEYS[step - 1]] });
+    show(step + 1);
+  });
+
+  if (back) back.addEventListener('click', function () { show(current - 1); });
+  if (nameEl) nameEl.addEventListener('input', render);
+
+  Array.prototype.forEach.call(quiz.querySelectorAll('[data-quiz-send]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var name = nameEl ? nameEl.value.trim() : '';
+      var parts = [];
+      if (answers.work) parts.push('Job: ' + answers.work);
+      if (answers.property) parts.push('Property: ' + answers.property);
+      if (answers.urgency) parts.push('Timing: ' + answers.urgency);
+      if (window.sendLead) {
+        window.sendLead({
+          type: 'Quote funnel',
+          name: name,
+          /* The visitor's own number is never captured: the funnel hands off to
+             WhatsApp or SMS, so the reply comes from their handset. Left blank
+             deliberately rather than sending the client his own number. */
+          phone: '',
+          service: answers.work,
+          details: parts.join(' | '),
+          source: 'ad landing page'
+        });
+      }
+      /* Meta's standard Lead event - this is what the ad set optimises on. */
+      if (window.track) {
+        window.track('Lead', {
+          content_name: 'Quote funnel',
+          method: btn.getAttribute('data-quiz-send'),
+          job: answers.work,
+          urgency: answers.urgency
+        });
+      }
+    }, false);
+  });
+
+  /* The floating button carries whatever has been answered so far. */
+  var float = document.querySelector('[data-quiz-wa]');
+  if (float) {
+    float.addEventListener('click', function () {
+      float.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(message());
+    });
+  }
+
+  show(1);
 })();
