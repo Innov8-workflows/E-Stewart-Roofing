@@ -161,7 +161,8 @@ header{background:#000;position:sticky;top:0;z-index:60}
 .btn-ghost:hover{border-color:var(--red-lt);color:var(--red-lt)}
 
 /* ---- bands ---- */
-.band{padding-block:clamp(38px,5.6vw,72px)}
+.band{padding-block:clamp(30px,5.6vw,72px)}
+.band > .wrap > .center{margin-bottom:2px}
 .band.tint{background:var(--bg-2)}
 .band.dark{background:var(--ink);color:var(--on-dark)}
 .band.dark .eyebrow{color:var(--red-lt)}
@@ -171,39 +172,78 @@ header{background:#000;position:sticky;top:0;z-index:60}
 .band.dark .sub{color:var(--on-dark-2)}
 .center .sub{margin-inline:auto}
 
-.grid{display:grid;gap:14px;margin-top:26px}
+.grid{display:grid;gap:12px;margin-top:22px}
 @media(min-width:640px){.grid.g2{grid-template-columns:1fr 1fr}}
 @media(min-width:880px){.grid.g4{grid-template-columns:repeat(4,1fr)}.grid.g3{grid-template-columns:repeat(3,1fr)}}
 
-.step{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+/* A ROW on a phone, a card on a wider screen. As stacked full-width cards
+   with the number on its own line these four cost 996px; as rows they cost
+   about half that and read better, because the eye tracks a single column of
+   numbers down the left. */
+.step{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px 15px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
 .band.tint .step{background:#fff}
-.step b{display:block;font-family:'Barlow';font-weight:800;font-size:1.02rem;margin-bottom:6px}
-.step p{color:var(--muted);font-size:.88rem}
-.step .n{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+.step b{display:block;font-family:'Barlow';font-weight:800;font-size:1rem;margin-bottom:3px}
+.step p{color:var(--muted);font-size:.86rem;line-height:1.5}
+.step .n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
   border-radius:50%;background:var(--ink);color:#fff;font-family:'Barlow';font-weight:800;
-  font-size:.82rem;margin-bottom:11px}
+  font-size:.8rem;flex:none;margin-top:1px}
+@media(min-width:880px){
+  .step{display:block;padding:20px}
+  .step .n{margin-bottom:11px}
+}
 
 .why{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);
-  border-radius:var(--r);padding:19px}
-.why .ic{width:22px;height:22px;color:var(--red-lt);margin-bottom:10px}
-.why b{display:block;font-family:'Barlow';font-weight:800;font-size:.98rem;color:#fff;margin-bottom:5px}
-.why p{color:var(--on-dark-2);font-size:.85rem}
+  border-radius:var(--r);padding:14px 15px;
+  display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+.why .ic{width:20px;height:20px;color:var(--red-lt);flex:none;margin-top:2px}
+.why b{display:block;font-family:'Barlow';font-weight:800;font-size:.96rem;color:#fff;margin-bottom:3px}
+.why p{color:var(--on-dark-2);font-size:.84rem;line-height:1.5}
+@media(min-width:880px){
+  .why{display:block;padding:19px}
+  .why .ic{width:22px;height:22px;margin:0 0 10px}
+}
+@media(max-width:879px){
+  .grid.g4.whygrid{grid-template-columns:1fr 1fr}
+  .why{display:block;padding:13px}
+  .why .ic{margin:0 0 7px}
+  .why b{font-size:.88rem}
+  .why p{font-size:.78rem;line-height:1.45}
+}
 
-.shots{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:26px}
+.shots{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:22px}
 @media(min-width:880px){.shots{grid-template-columns:repeat(3,1fr)}}
 .shots figure{position:relative;border-radius:var(--r);overflow:hidden;background:var(--ink)}
 .shots img{width:100%;aspect-ratio:4/3;object-fit:cover}
 
 .about{display:grid;gap:22px;align-items:center}
 @media(min-width:820px){.about{grid-template-columns:.85fr 1.15fr}}
-.about img{border-radius:var(--r);width:100%;aspect-ratio:1/1;object-fit:cover}
+/* 4:3 on a phone rather than a full square - it is the same photograph, ~120px
+   less scrolling, and the subject is centred either way. */
+.about img{border-radius:var(--r);width:100%;aspect-ratio:4/3;object-fit:cover}
+@media(min-width:820px){.about img{aspect-ratio:1/1}}
 .about p{color:var(--muted);margin-top:11px}
 .about .quote{border-left:3px solid var(--red);padding-left:16px;margin-top:16px;
   font-size:1.02rem;color:var(--ink);font-style:italic}
 .about cite{display:block;margin-top:8px;font-style:normal;font-weight:700;font-size:.86rem;color:var(--muted)}
 
-.rv{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:19px;
-  display:flex;flex-direction:column;gap:11px}
+/* Three stacked review cards cost 1086px on a phone. As a scroll-snap rail
+   they cost the height of ONE and the swipe is a familiar gesture. The rail
+   bleeds to the screen edge so a half-visible second card signals that it
+   scrolls - without that affordance people do not try. */
+.rvrail{display:grid;gap:12px}
+@media(max-width:879px){
+  .rvrail{grid-auto-flow:column;grid-auto-columns:82%;overflow-x:auto;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    margin-inline:calc(var(--gut, 16px) * -1);padding-inline:16px;
+    scrollbar-width:none}
+  .rvrail::-webkit-scrollbar{display:none}
+  .rvrail > .rv{scroll-snap-align:start}
+  .rvhint{display:block}
+}
+.rvhint{display:none;text-align:center;color:var(--muted);font-size:.76rem;margin-top:11px}
+.rv{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:17px;
+  display:flex;flex-direction:column;gap:10px}
 .rv-top{display:flex;align-items:center;justify-content:space-between}
 .rv-top .g-mark{width:19px;height:19px}
 .rv-stars{display:flex;gap:2px}
@@ -212,7 +252,7 @@ header{background:#000;position:sticky;top:0;z-index:60}
 .rv b{font-size:.86rem}
 .rv small{display:block;color:var(--muted);font-size:.76rem}
 
-.areas{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;justify-content:center}
+.areas{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px;justify-content:center}
 .areas span{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
   border-radius:100px;padding:8px 15px;font-size:.82rem;font-weight:600}
 
@@ -373,10 +413,10 @@ body.cc-open .wa-float{bottom:calc(16px + 92px)}
       <p class="sub center">No sales visit, no pressure, and a written price you can hold us to.</p>
     </div>
     <div class="grid g4">
-      <div class="step up"><span class="n">1</span><b>We come and look</b><p>Someone comes out, gets on the roof or gets the drone up, and finds out what is actually wrong rather than guessing from the ground.</p></div>
-      <div class="step up"><span class="n">2</span><b>A written price</b><p>You get a written, itemised quote with what needs doing and what it costs. No pressure and no obligation.</p></div>
-      <div class="step up"><span class="n">3</span><b>The work</b><p>We turn up when we said we would, keep the place tidy, and send you photographs as the job goes along.</p></div>
-      <div class="step up"><span class="n">4</span><b>Afterwards</b><p>The work is guaranteed up to 20 years depending on the job, confirmed in writing, and we come back if anything is not right.</p></div>
+      <div class="step up"><span class="n">1</span><b>We come and look</b><p>We get on the roof, or get the drone up, and find what is actually wrong rather than guessing from the ground.</p></div>
+      <div class="step up"><span class="n">2</span><b>A written price</b><p>An itemised written quote: what needs doing, what it costs. No pressure, no obligation.</p></div>
+      <div class="step up"><span class="n">3</span><b>The work</b><p>We turn up when we said, keep the place tidy, and send photos as the job goes along.</p></div>
+      <div class="step up"><span class="n">4</span><b>Afterwards</b><p>Guaranteed up to 20 years depending on the job, in writing. We come back if anything is not right.</p></div>
     </div>
   </div>
 </section>
@@ -428,11 +468,11 @@ body.cc-open .wa-float{bottom:calc(16px + 92px)}
       <span class="eyebrow">Why us</span>
       <h2>19 years of roofs across the west of Scotland</h2>
     </div>
-    <div class="grid g4">
-      <div class="why up"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><b>£1,000,000 public liability</b><p>Fully insured, and the cover is confirmed in writing before any work starts.</p></div>
-      <div class="why up"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><b>up to 20 years guarantee</b><p>Depending on the job, and confirmed in writing with your quote rather than promised on the phone.</p></div>
-      <div class="why up"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg><b>You see the evidence</b><p>Photographs before, during and after. You do not have to take our word for what happened up there.</p></div>
-      <div class="why up"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><b>Family run, 19 years</b><p>Ewan Stewart and a team of 6, including two joiners, so rotten timber is handled in house.</p></div>
+    <div class="grid g4 whygrid">
+      <div class="why up"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><b>£1,000,000 public liability</b><p>Confirmed in writing before any work starts.</p></div>
+      <div class="why up"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><b>Guaranteed up to 20 years</b><p>In writing with your quote, not promised on the phone.</p></div>
+      <div class="why up"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg><b>You see the evidence</b><p>Photos before, during and after. No taking our word for it.</p></div>
+      <div class="why up"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><b>Family run, 19 years</b><p>Ewan Stewart and a team of 6, two of them joiners, so rotten timber is done in house.</p></div>
     </div>
   </div>
 </section>
@@ -449,24 +489,34 @@ body.cc-open .wa-float{bottom:calc(16px + 92px)}
       <h2>Rated 4.9 from 61 Google reviews</h2>
       <p class="sub center">A few of them, word for word.</p>
     </div>
-    <div class="grid g3">
+    <div class="rvrail">
       <article class="rv up">
         <div class="rv-top"><svg class="g-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg><div class="rv-stars"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg></div></div>
-        <p>I couldn’t recommend E Stewart Roofing Ltd highly enough. Ewan and his team – John, Jamie and Michael and the rest of the guys – were absolutely fantastic from start to finish. They recently completed a brand-new roof for us, and the workmanship is&amp;hellip;</p>
+        <!-- Escape the TEXT, then append the entity. Wrapping esc() around the
+             whole expression turned the & of &hellip; into &amp; and the card
+             printed a literal "&hellip;". -->
+        <p>I couldn’t recommend E Stewart Roofing Ltd highly enough. Ewan and his team – John, Jamie and Michael and the rest of the guys – were absolutely fantastic from start to finish. They recently completed a brand-new roof for us, and the workmanship is&hellip;</p>
         <div><b>Duncan</b><small>June 2026 &middot; via Google</small></div>
       </article>
       <article class="rv up">
         <div class="rv-top"><svg class="g-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg><div class="rv-stars"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg></div></div>
-        <p>Excellent service from E Stewart Roofing Ltd from start to finish. We had all new gutters fitted and the whole process was smooth and professional. The team arrived on time, worked efficiently, and left everything clean and tidy afterwards. The new&amp;hellip;</p>
+        <!-- Escape the TEXT, then append the entity. Wrapping esc() around the
+             whole expression turned the & of &hellip; into &amp; and the card
+             printed a literal "&hellip;". -->
+        <p>Excellent service from E Stewart Roofing Ltd from start to finish. We had all new gutters fitted and the whole process was smooth and professional. The team arrived on time, worked efficiently, and left everything clean and tidy afterwards. The new&hellip;</p>
         <div><b>Stuart Gibb</b><small>May 2026 &middot; via Google</small></div>
       </article>
       <article class="rv up">
         <div class="rv-top"><svg class="g-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg><div class="rv-stars"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg></div></div>
-        <p>Having had unfortunate experiences with roofing contractors to repair a damaged roof due to accidental debris impacting it, I contacted E Stewart Roofing Ltd. They responded quickly, agreed a price and the roof was repaired with no fuss. A good job, well&amp;hellip;</p>
+        <!-- Escape the TEXT, then append the entity. Wrapping esc() around the
+             whole expression turned the & of &hellip; into &amp; and the card
+             printed a literal "&hellip;". -->
+        <p>Having had unfortunate experiences with roofing contractors to repair a damaged roof due to accidental debris impacting it, I contacted E Stewart Roofing Ltd. They responded quickly, agreed a price and the roof was repaired with no fuss. A good job, well&hellip;</p>
         <div><b>Sandy Scott</b><small>April 2026 &middot; via Google</small></div>
       </article>
     </div>
-    <div class="center" style="margin-top:22px">
+    <p class="rvhint">Swipe for more &rarr;</p>
+    <div class="center" style="margin-top:18px">
       <a class="btn btn-red" href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x804c14bc36b8961b:0x4a176d68456f0a3" target="_blank" rel="noopener"><svg class="g-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg> Read all 61 reviews</a>
     </div>
   </div>

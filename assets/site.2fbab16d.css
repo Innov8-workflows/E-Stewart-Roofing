@@ -411,6 +411,14 @@ ul{margin:0;padding:0;list-style:none}
 .rv__stars{display:flex;gap:3px;color:#F5A623}
 .rv__stars .ic{width:16px;height:16px}
 .rv__txt{color:var(--steel);font-size:.92rem;line-height:1.6;flex:1}
+/* The longest review runs 705 characters, which on a phone is eighteen lines
+   and drove the whole carousel to 1185px - one review costing a screen and a
+   half. Clamped VISUALLY only: the full text stays in the DOM, so crawlers and
+   answer engines still read every word, and /reviews/ shows them in full. */
+@media(max-width:859px){
+  .rv__txt{display:-webkit-box;-webkit-line-clamp:9;-webkit-box-orient:vertical;
+    overflow:hidden;flex:none}
+}
 .rv__who{display:flex;align-items:center;gap:11px;padding-top:12px;border-top:1px solid var(--line)}
 /* brand red on near-black is 3.5:1; the lighter red clears AA at 4.9:1 */
 .rv__av{
@@ -711,8 +719,18 @@ ul{margin:0;padding:0;list-style:none}
 .faq__a p{margin:0}
 
 /* card grids used for the service and location indexes */
-.cards{display:grid;gap:12px}
-@media(min-width:640px){.cards{grid-template-columns:repeat(2,1fr)}}
+/* TWO-UP FROM THE SMALLEST SCREEN. As a single column the services hub ran
+   15 cards at 182px each - 2730px of stacked boxes for 77 characters of blurb
+   apiece. Two-up was the original brief for the homepage services and it reads
+   the same here. Tighter padding below 640px so the narrower column does not
+   swallow the text. */
+.cards{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+@media(min-width:640px){.cards{gap:12px;grid-template-columns:repeat(2,1fr)}}
+@media(max-width:639px){
+  .cards .card{padding:13px;gap:6px}
+  .cards .card h3{font-size:.95rem;line-height:1.2}
+  .cards .card p{font-size:.8rem;line-height:1.45}
+}
 @media(min-width:1000px){.cards--3{grid-template-columns:repeat(3,1fr)}}
 .card{
   display:flex;flex-direction:column;gap:8px;background:var(--white);border:1px solid var(--line);
@@ -947,3 +965,26 @@ table.tbl td:first-child{font-weight:600;color:var(--ink)}
 }
 .rvmore .ic{width:15px;height:15px}
 .rvmore:hover{text-decoration:underline}
+
+
+/* ---------- FAQ jump links ----------
+   A wrapping row of chips at the top of the FAQ page. Anchors only, no script,
+   so they work before any JS runs and survive a strict CSP. scroll-margin-top
+   clears the sticky header, without which the target heading lands underneath
+   it and the page looks like it jumped to the wrong place. */
+.jump{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 22px}
+.jump a{
+  display:inline-flex;align-items:center;min-height:38px;padding:8px 13px;
+  border:1px solid var(--line);border-radius:999px;background:var(--bg-2);
+  color:var(--ink);font-size:.8rem;font-weight:600;line-height:1;
+  transition:border-color .16s,background .16s;
+}
+.jump a:hover{border-color:var(--gold);background:var(--white)}
+.prose h2[id]{scroll-margin-top:calc(var(--nav-h, 64px) + 14px)}
+/* 16 group headings, each with its own top margin, were most of the page
+   height. Tighter on a phone, unchanged on a desktop. */
+@media(max-width:639px){
+  .faqs-tight .prose{margin-top:22px}
+  .faqs-tight .prose h2{font-size:1.12rem}
+  .faqs-tight .prose p{font-size:.86rem}
+}
