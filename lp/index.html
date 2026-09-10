@@ -180,22 +180,32 @@ header{background:#000;position:sticky;top:0;z-index:60}
    with the number on its own line these four cost 996px; as rows they cost
    about half that and read better, because the eye tracks a single column of
    numbers down the left. */
+/* Marker in a FIXED first column; title and text both in the second.
+   grid-template-columns:auto 1fr looks right and is a trap: the paragraph
+   auto-places into column 1 on row 2, and an "auto" column sizes to its
+   content - so the paragraph set the first column's width and squeezed the
+   title into a sliver on the right, one word per line. Placing all three
+   explicitly is the fix; the first column can then never be wider than 28px. */
 .step{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);
-  padding:14px 15px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+  padding:14px 15px;display:grid;grid-template-columns:28px 1fr;
+  column-gap:12px;row-gap:4px;align-items:start}
 .band.tint .step{background:#fff}
-.step b{display:block;font-family:'Barlow';font-weight:800;font-size:1rem;margin-bottom:3px}
-.step p{color:var(--muted);font-size:.86rem;line-height:1.5}
-.step .n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+.step .n{grid-column:1;grid-row:1;
+  display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
   border-radius:50%;background:var(--ink);color:#fff;font-family:'Barlow';font-weight:800;
   font-size:.8rem;flex:none;margin-top:1px}
+.step b{grid-column:2;grid-row:1;align-self:center;
+  display:block;font-family:'Barlow';font-weight:800;font-size:1rem}
+.step p{grid-column:2;grid-row:2;color:var(--muted);font-size:.86rem;line-height:1.5}
 @media(min-width:880px){
   .step{display:block;padding:20px}
+  .step .n,.step b,.step p{grid-column:auto;grid-row:auto}
   .step .n{margin-bottom:11px}
+  .step b{margin-bottom:6px}
 }
 
 .why{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);
-  border-radius:var(--r);padding:14px 15px;
-  display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+  border-radius:var(--r);padding:14px 15px;display:block}
 .why .ic{width:20px;height:20px;color:var(--red-lt);flex:none;margin-top:2px}
 .why b{display:block;font-family:'Barlow';font-weight:800;font-size:.96rem;color:#fff;margin-bottom:3px}
 .why p{color:var(--on-dark-2);font-size:.84rem;line-height:1.5}
