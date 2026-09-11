@@ -316,10 +316,39 @@
      NOTE the CRM does not separate test leads - delete them afterwards. */
   var TEST = /[?&]test=1/.test(location.search);
 
+  /* AD ATTRIBUTION.
+     Captured on the FIRST page of the visit and kept in sessionStorage, so a
+     visitor who lands from an ad and then taps the phone number two pages
+     later is still credited to that click - the query string is gone by then.
+     sessionStorage, not localStorage: this is one visit, not a permanent
+     label, and it must not survive into an unrelated organic visit weeks
+     later and misattribute it. Wrapped because a private window can throw on
+     access rather than merely returning null. */
+  var AK = 'es-attrib';
+  function attrib() {
+    var keep = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
+                'utm_term', 'fbclid', 'gclid'];
+    var found = {}, any = false;
+    try {
+      var q = new URLSearchParams(location.search);
+      keep.forEach(function (k) {
+        var v = q.get(k);
+        if (v) { found[k] = String(v).slice(0, 200); any = true; }
+      });
+    } catch (e) {}
+    try {
+      if (any) { sessionStorage.setItem(AK, JSON.stringify(found)); return found; }
+      var saved = sessionStorage.getItem(AK);
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) { return found; }
+  }
+
   function send(d) {
     try {
       d.page = location.pathname || '/';
       d.referrer = document.referrer || '';
+      var a = attrib();
+      for (var k in a) { if (a.hasOwnProperty(k) && !d[k]) d[k] = a[k]; }
       if (TEST) d.test = true;
       fetch(LEAD_URL, {
         method: 'POST',
