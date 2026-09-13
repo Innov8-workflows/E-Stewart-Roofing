@@ -18,6 +18,15 @@
   var root = document.documentElement;
   var gaId = root.getAttribute('data-ga');
   var pxId = root.getAttribute('data-pixel');
+  /* Google Ads. Same gtag.js as GA4 with a second config line - Google's
+     emailed instructions say to paste a second copy of the library, which
+     loads it twice and duplicates every hit. Conversions are two labels, one
+     for a funnel lead and one for a call tap, fired from the same moments as
+     the Meta events. All three are empty until the client's account exists,
+     and empty means nothing is emitted. */
+  var awId = root.getAttribute('data-aw') || '';
+  var awLead = root.getAttribute('data-aw-lead') || '';
+  var awCall = root.getAttribute('data-aw-call') || '';
 
   /* The ad landing page carries a consent bar; the rest of the site does not.
      Where one is PRESENT, nothing measuring runs until it is accepted - which
@@ -30,11 +39,12 @@
   function startTrackers() {
     if (started) return;
     started = true;
-    if (gaId) {
+    if (gaId || awId) {
       window.dataLayer = window.dataLayer || [];
       window.gtag = function () { window.dataLayer.push(arguments); };
       window.gtag('js', new Date());
-      window.gtag('config', gaId);
+      if (gaId) window.gtag('config', gaId);
+      if (awId) window.gtag('config', awId);
       /* The 46 pages built through lib.head() already carry the gtag.js loader
          in the head, so only add it where it is missing.
 
@@ -45,7 +55,7 @@
       if (!document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) {
         var g = document.createElement('script');
         g.async = true;
-        g.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+        g.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId || awId);
         document.head.appendChild(g);
       }
     }
@@ -68,9 +78,20 @@
   /* Queued until consent lands, then flushed, so an event fired during the
      banner is not simply lost. */
   var q = [];
+  /* Google Ads conversion. Google's instructions assume a "thank you" page to
+     hang this on; there is none here, because the funnel hands off to
+     WhatsApp and the visitor never comes back, so it fires from the same
+     moment as the other events. No value/currency: Google's snippet ships a
+     placeholder 1.00 GBP and a roofing lead is not worth a pound - a wrong
+     number makes the Ads ROAS column actively misleading. */
+  function conv(label) {
+    if (!window.gtag || !awId || !label) return;
+    window.gtag('event', 'conversion', { send_to: awId + '/' + label });
+  }
   window.track = function (name, params) {
     if (!started) { q.push([name, params]); return; }
     if (window.gtag) window.gtag('event', name, params || {});
+    if (name === 'Lead') conv(awLead);
     if (window.fbq) {
       var STD = { Lead: 1, Contact: 1, PageView: 1 };
       window.fbq(STD[name] ? 'track' : 'trackCustom', name, params || {});
@@ -123,6 +144,7 @@
 
     if (/^tel:/i.test(href)) {
       ev('click_to_call', { link_url: href, link_text: label, method: 'phone' });
+      conv(awCall);
     } else if (/(^https?:)?\/\/(wa\.me|api\.whatsapp\.com)/i.test(href)) {
       ev('click_whatsapp', { link_url: href, link_text: label, method: 'whatsapp' });
     } else if (/^mailto:/i.test(href)) {
@@ -365,6 +387,7 @@
   function where(el) {
     if (!el || !el.closest) return 'page';
     if (el.closest('.wa')) return 'whatsapp float';
+    if (el.closest('.callbar')) return 'sticky call bar';
     if (el.closest('.nav')) return 'nav';
     if (el.closest('.hero')) return 'hero';
     if (el.closest('.phead')) return 'page header';
@@ -464,8 +487,36 @@
   var sumEl = quiz.querySelector('[data-quiz-summary]');
   var TOTAL = steps.length;
   var current = 1;
-  var KEYS = ['work', 'property', 'urgency'];
-  var answers = { work: '', property: '', urgency: '' };
+
+  /* THE QUIZ IS DESCRIBED BY THE MARKUP, not by this file. Each answer step
+     carries data-key (its slot) and data-label (its line in the message), so
+     a page can ask different questions without a change here. The root may
+     carry data-work: a preset job for a page that already knows the service
+     (someone who searched "flat roof" is not asked what type of work), plus
+     data-from and data-source so the message and the lead sheet say which
+     page it came from. The Meta page carries none of the root attributes and
+     its steps are work/property/urgency, which reproduces its old behaviour
+     exactly. */
+  var KEYS = [], LABELS = {}, answers = {};
+  Array.prototype.forEach.call(steps, function (s) {
+    var k = s.getAttribute('data-key');
+    if (!k) return;
+    KEYS.push(k);
+    LABELS[k] = s.getAttribute('data-label') || k;
+    answers[k] = '';
+  });
+  var WORK = quiz.getAttribute('data-work') || '';
+  var FROM = quiz.getAttribute('data-from') || 'the ad landing page';
+  var SOURCE = quiz.getAttribute('data-source') || 'ad landing page';
+  var job = function () { return WORK || answers.work || ''; };
+  /* Every answered line, in step order, each labelled - the same list feeds
+     the WhatsApp message and the lead sheet's details column. */
+  var lines = function () {
+    var out = [];
+    if (WORK) out.push('Job: ' + WORK);
+    KEYS.forEach(function (k) { if (answers[k]) out.push(LABELS[k] + ': ' + answers[k]); });
+    return out;
+  };
 
   function show(n) {
     current = Math.min(Math.max(n, 1), TOTAL);
@@ -481,14 +532,11 @@
   function message() {
     var name = nameEl ? nameEl.value.trim() : '';
     var phone = phoneEl ? phoneEl.value.trim() : '';
-    var lines = ['Hello E Stewart Roofing, I would like a free quote.', ''];
-    if (answers.work) lines.push('Job: ' + answers.work);
-    if (answers.property) lines.push('Property: ' + answers.property);
-    if (answers.urgency) lines.push('Timing: ' + answers.urgency);
-    if (name) lines.push('Name: ' + name);
-    if (phone) lines.push('Phone: ' + phone);
-    lines.push('', 'Sent from the ad landing page on estewartroofingltd.co.uk');
-    return lines.join('\n');
+    var out = ['Hello E Stewart Roofing, I would like a free quote.', ''].concat(lines());
+    if (name) out.push('Name: ' + name);
+    if (phone) out.push('Phone: ' + phone);
+    out.push('', 'Sent from ' + FROM + ' on estewartroofingltd.co.uk');
+    return out.join('\n');
   }
 
   function render() {
@@ -508,13 +556,15 @@
   quiz.addEventListener('click', function (e) {
     var opt = e.target && e.target.closest ? e.target.closest('.opt') : null;
     if (!opt) return;
-    var step = Number(opt.closest('.qstep').getAttribute('data-step'));
-    answers[KEYS[step - 1]] = opt.getAttribute('data-val') || '';
+    var stepEl = opt.closest('.qstep');
+    var step = Number(stepEl.getAttribute('data-step'));
+    var key = stepEl.getAttribute('data-key') || KEYS[step - 1];
+    answers[key] = opt.getAttribute('data-val') || '';
     /* Drop-off is the whole point of measuring this page. The lead sheet only
        ever sees completions, so without a per-step event there is no way to
        know the quiz is losing people at, say, the property question. */
-    if (step === 1 && window.track) window.track('funnel_start', { answer: answers.work });
-    if (window.track) window.track('funnel_step', { step: step, answer: answers[KEYS[step - 1]] });
+    if (step === 1 && window.track) window.track('funnel_start', { answer: answers[key] });
+    if (window.track) window.track('funnel_step', { step: step, answer: answers[key] });
     show(step + 1);
   });
 
@@ -526,11 +576,11 @@
     btn.addEventListener('click', function () {
       var name = nameEl ? nameEl.value.trim() : '';
       var phone = phoneEl ? phoneEl.value.trim() : '';
-      var parts = [];
-      if (answers.work) parts.push('Job: ' + answers.work);
-      if (answers.property) parts.push('Property: ' + answers.property);
-      if (answers.urgency) parts.push('Timing: ' + answers.urgency);
       if (window.sendLead) {
+        /* type stays 'Quote funnel' on EVERY ad page: it must match
+           NOTIFY_TYPES and FORM_TYPES in the Apps Script or the alert email
+           silently stops and the CRM strips the name. The page is told apart
+           by source, which is free text. */
         window.sendLead({
           type: 'Quote funnel',
           name: name,
@@ -540,18 +590,19 @@
              It is the VISITOR's number - never the client's, which is what a
              tel: tap would carry. */
           phone: phone,
-          service: answers.work,
-          details: parts.join(' | '),
-          source: 'ad landing page'
+          service: job(),
+          details: lines().join(' | '),
+          source: SOURCE
         });
       }
-      /* Meta's standard Lead event - this is what the ad set optimises on. */
+      /* Meta's standard Lead event - this is what the ad set optimises on -
+         and, through track(), the Google Ads lead conversion. */
       if (window.track) {
         window.track('Lead', {
           content_name: 'Quote funnel',
           method: btn.getAttribute('data-quiz-send'),
-          job: answers.work,
-          urgency: answers.urgency
+          job: job(),
+          urgency: answers.urgency || ''
         });
       }
     }, false);
