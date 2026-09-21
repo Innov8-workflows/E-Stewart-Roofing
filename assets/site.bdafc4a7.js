@@ -484,7 +484,36 @@
   var back = quiz.querySelector('[data-quiz-back]');
   var nameEl = quiz.querySelector('[data-quiz-name]');
   var phoneEl = quiz.querySelector('[data-quiz-phone]');
+  var addrEl = quiz.querySelector('[data-quiz-address]');
+  var errEl = quiz.querySelector('[data-quiz-error]');
   var sumEl = quiz.querySelector('[data-quiz-summary]');
+
+  /* CONTACT DETAILS ARE REQUIRED (2026-09-21). The quiz hands off to WhatsApp
+     or SMS, and a share of people tap Send here and never press send there -
+     the client was receiving leads with a first name and nothing else. So
+     nothing leaves the page until there is a name, a usable number and an
+     address. Returns the problem to show, or '' when all is well. */
+  function validate(name, phone, addr) {
+    var digits = phone.replace(/\D/g, '');
+    if (name.length < 2) return { el: nameEl, msg: 'Please add your name.' };
+    if (digits.length < 10 || digits.length > 13) return { el: phoneEl, msg: 'Please add a phone number we can ring you on.' };
+    if (addr.length < 4) return { el: addrEl, msg: 'Please add the address or postcode of the roof.' };
+    return null;
+  }
+  function showError(p, quiet) {
+    [nameEl, phoneEl, addrEl].forEach(function (el) { if (el) el.classList.remove('bad'); });
+    if (!p) { if (errEl) errEl.hidden = true; return; }
+    if (errEl) { errEl.textContent = p.msg; errEl.hidden = false; }
+    if (p.el) { p.el.classList.add('bad'); if (!quiet) p.el.focus(); }
+  }
+  /* After one refused send, re-check as they type so the red clears the
+     moment the detail is in - without stealing focus from the field they
+     are typing in. Before that first attempt, say nothing. */
+  var tried = false;
+  function recheck() {
+    if (!tried) return;
+    showError(validate(nameEl ? nameEl.value.trim() : '', phoneEl ? phoneEl.value.trim() : '', addrEl ? addrEl.value.trim() : ''), true);
+  }
   var TOTAL = steps.length;
   var current = 1;
 
@@ -532,9 +561,11 @@
   function message() {
     var name = nameEl ? nameEl.value.trim() : '';
     var phone = phoneEl ? phoneEl.value.trim() : '';
+    var addr = addrEl ? addrEl.value.trim() : '';
     var out = ['Hello E Stewart Roofing, I would like a free quote.', ''].concat(lines());
     if (name) out.push('Name: ' + name);
     if (phone) out.push('Phone: ' + phone);
+    if (addr) out.push('Address: ' + addr);
     out.push('', 'Sent from ' + FROM + ' on estewartroofingltd.co.uk');
     return out.join('\n');
   }
@@ -569,13 +600,21 @@
   });
 
   if (back) back.addEventListener('click', function () { show(current - 1); });
-  if (nameEl) nameEl.addEventListener('input', render);
-  if (phoneEl) phoneEl.addEventListener('input', render);
+  [nameEl, phoneEl, addrEl].forEach(function (el) {
+    if (el) el.addEventListener('input', function () { render(); recheck(); });
+  });
 
   Array.prototype.forEach.call(quiz.querySelectorAll('[data-quiz-send]'), function (btn) {
-    btn.addEventListener('click', function () {
+    btn.addEventListener('click', function (e) {
       var name = nameEl ? nameEl.value.trim() : '';
       var phone = phoneEl ? phoneEl.value.trim() : '';
+      var addr = addrEl ? addrEl.value.trim() : '';
+      /* Missing details: stay on the page, say what is missing, and log
+         NOTHING - no sheet row, no CRM lead, no Lead event. The href still
+         points at wa.me, so preventDefault is what actually stops the send. */
+      var problem = validate(name, phone, addr);
+      if (problem) { e.preventDefault(); tried = true; showError(problem); return; }
+      showError(null);
       if (window.sendLead) {
         /* type stays 'Quote funnel' on EVERY ad page: it must match
            NOTIFY_TYPES and FORM_TYPES in the Apps Script or the alert email
@@ -590,6 +629,7 @@
              It is the VISITOR's number - never the client's, which is what a
              tel: tap would carry. */
           phone: phone,
+          area: addr,                       /* the sheet's Area column + the CRM message */
           service: job(),
           details: lines().join(' | '),
           source: SOURCE
