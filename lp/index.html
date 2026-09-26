@@ -304,17 +304,62 @@ body.cc-open .wa-float{bottom:calc(16px + 92px)}
 .up{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
 .up.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.up{opacity:1;transform:none;transition:none}}
+
+/* ---- signs (Google pages) ----
+   Two-up from 640px: six full-width rows on a phone cost a screen and a
+   half; two columns halve that and the eye reads them as a checklist. */
+.signs{list-style:none;display:grid;gap:8px;margin-top:20px}
+@media(min-width:640px){.signs{grid-template-columns:1fr 1fr}}
+.signs li{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);
+  border-radius:var(--r);padding:12px 14px;font-size:.88rem;font-weight:600;line-height:1.4}
+.signs .ic{color:var(--red);margin-top:2px}
+
+/* ---- faqs (Google pages) ----
+   Native details/summary: no script, and a search visitor who came in on
+   "how long does a new roof take" finds the answer without leaving. */
+.faqs{margin-top:20px;display:grid;gap:8px;max-width:760px;margin-inline:auto}
+.faq{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r);padding:0 16px}
+.band.tint .faq{background:#fff}
+.faq summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;min-height:52px;padding:12px 0;font-family:'Barlow';font-weight:800;font-size:1rem;line-height:1.25}
+.faq summary::-webkit-details-marker{display:none}
+/* The shared chevron path points RIGHT. Closed = down, open = up. */
+.faq summary .ic{color:var(--red);transition:transform .2s;transform:rotate(90deg)}
+.faq[open] summary .ic{transform:rotate(-90deg)}
+.faq p{color:var(--muted);font-size:.9rem;padding:0 0 14px}
+
+/* The final CTA sits on a dark photograph and the default eyebrow red is
+   the DARK shade, which vanishes there. */
+.final .eyebrow{color:var(--red-lt)}
+.final .sub{color:var(--on-dark-2)}
+
+/* ---- sticky call bar (Google pages) ----
+   A search visitor on a phone phones. Two thumbs-width buttons pinned to
+   the bottom: call the landline, or jump back up to the quiz. Hidden while
+   the consent bar occupies the same edge, and on desktop, where the header
+   button is always in view. */
+.callbar{position:fixed;left:0;right:0;bottom:0;z-index:70;display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:rgba(16,18,21,.96);
+  border-top:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px)}
+.callbar a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;
+  border-radius:100px;font-family:'Barlow';font-weight:800;font-size:.95rem}
+.callbar .cb-call{background:var(--red);color:#fff}
+.callbar .cb-quote{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.28)}
+.callbar .ic{width:18px;height:18px}
+body.has-callbar{padding-bottom:72px}
+body.cc-open .callbar{display:none}
+@media(min-width:880px){.callbar{display:none}body.has-callbar{padding-bottom:0}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":["RoofingContractor","LocalBusiness"],"@id":"https://www.estewartroofingltd.co.uk/#business","name":"E Stewart Roofing Ltd","alternateName":"E Stewart Roofing","url":"https://www.estewartroofingltd.co.uk/","telephone":["+441414591536","+447464695657"],"image":"https://www.estewartroofingltd.co.uk/assets/og-default.jpg","logo":{"@type":"ImageObject","url":"https://www.estewartroofingltd.co.uk/assets/logo-hero.webp"},"slogan":"Fixing the past, building the future","description":"Family-run roofing and building contractor covering Glasgow, Ayrshire and the west of Scotland. Roof repairs, new roofs, slate and tile, flat roofing, emergency repairs, chimney work, leadwork and guttering, plus roughcasting, rendering and repointing. Trading for over 19 years with a team of 6, insured, and all work guaranteed up to 20 years.","areaServed":[{"@type":"City","name":"Glasgow"},{"@type":"City","name":"Kilmarnock"},{"@type":"City","name":"Ayr"},{"@type":"City","name":"Troon"},{"@type":"City","name":"Irvine"},{"@type":"City","name":"Prestwick"},{"@type":"City","name":"Cumnock"},{"@type":"City","name":"East Kilbride"},{"@type":"City","name":"Paisley"},{"@type":"City","name":"Hamilton"},{"@type":"City","name":"Greenock"},{"@type":"City","name":"Gourock"},{"@type":"City","name":"Port Glasgow"},{"@type":"City","name":"Largs"},{"@type":"City","name":"Kilwinning"},{"@type":"City","name":"Ardrossan"},{"@type":"City","name":"Saltcoats"},{"@type":"City","name":"Newton Mearns"},{"@type":"City","name":"Bearsden"},{"@type":"City","name":"Milngavie"}],"knowsAbout":["Roof Repairs Glasgow and Ayrshire","New Roofs and Re-Roofing Glasgow","Slate and Tile Roofing Glasgow and Ayrshire","Flat Roofing Glasgow and Ayrshire","Emergency Roof Repairs Glasgow and Ayrshire","Chimney Repairs and Repointing Glasgow","Leadwork and Lead Flashing Glasgow","Guttering, Fascias and Soffits Glasgow","Roughcasting and Harling Glasgow and Ayrshire","Exterior Rendering Glasgow and Ayrshire","Storm Damage Roof Repairs Glasgow","Dry Ridge and Dry Verge Systems Glasgow","Repointing Glasgow and Ayrshire","Roof Cleaning and Moss Removal Glasgow","Roof Inspections and Surveys Glasgow"],"hasOfferCatalog":{"@type":"OfferCatalog","name":"Roofing and building services","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Roof Repairs Glasgow and Ayrshire","url":"https://www.estewartroofingltd.co.uk/roof-repairs/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"New Roofs and Re-Roofing Glasgow","url":"https://www.estewartroofingltd.co.uk/new-roofs/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Slate and Tile Roofing Glasgow and Ayrshire","url":"https://www.estewartroofingltd.co.uk/slate-and-tile-roofing/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Flat Roofing Glasgow and Ayrshire","url":"https://www.estewartroofingltd.co.uk/flat-roofing/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Emergency Roof Repairs Glasgow and Ayrshire","url":"https://www.estewartroofingltd.co.uk/emergency-roof-repairs/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Chimney Repairs and Repointing Glasgow","url":"https://www.estewartroofingltd.co.uk/chimney-repairs/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Leadwork and Lead Flashing Glasgow","url":"https://www.estewartroofingltd.co.uk/leadwork/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Guttering, Fascias and Soffits Glasgow","url":"https://www.estewartroofingltd.co.uk/gutters-fascias-and-soffits/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Roughcasting and Harling Glasgow and Ayrshire","url":"https://www.estewartroofingltd.co.uk/roughcasting/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Exterior Rendering Glasgow and Ayrshire","url":"https://www.estewartroofingltd.co.uk/exterior-rendering/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Storm Damage Roof Repairs Glasgow","url":"https://www.estewartroofingltd.co.uk/storm-damage-repairs/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Dry Ridge and Dry Verge Systems Glasgow","url":"https://www.estewartroofingltd.co.uk/dry-ridge-systems/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Repointing Glasgow and Ayrshire","url":"https://www.estewartroofingltd.co.uk/repointing/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Roof Cleaning and Moss Removal Glasgow","url":"https://www.estewartroofingltd.co.uk/roof-cleaning/"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Roof Inspections and Surveys Glasgow","url":"https://www.estewartroofingltd.co.uk/roof-inspections/"}}]},"address":{"@type":"PostalAddress","streetAddress":"48 West George Street","addressLocality":"Glasgow","addressRegion":"Glasgow City","addressCountry":"GB","postalCode":"G2 1BP"},"numberOfEmployees":{"@type":"QuantitativeValue","value":6},"founder":{"@type":"Person","name":"Ewan Stewart"},"employee":{"@type":"Person","name":"Ewan Stewart","jobTitle":"Owner"},"contactPoint":{"@type":"ContactPoint","telephone":["+441414591536","+447464695657"],"contactType":"customer service","areaServed":"GB","availableLanguage":"English"},"email":"esroofing98@gmail.com","foundingDate":"2007","sameAs":["https://www.facebook.com/profile.php?id=61591832021384"]},{"@type":"WebSite","@id":"https://www.estewartroofingltd.co.uk/#website","url":"https://www.estewartroofingltd.co.uk/","name":"E Stewart Roofing Ltd","publisher":{"@id":"https://www.estewartroofingltd.co.uk/#business"},"inLanguage":"en-GB"},{"@type":"WebPage","@id":"https://www.estewartroofingltd.co.uk/lp/#webpage","url":"https://www.estewartroofingltd.co.uk/lp/","name":"Free Roofing Quote | E Stewart Roofing","description":"Family-run roofers across Glasgow, Ayrshire and the west of Scotland. £1,000,000 insured, guaranteed up to 20 years. Four quick questions for a free quote.","isPartOf":{"@id":"https://www.estewartroofingltd.co.uk/#website"},"about":{"@id":"https://www.estewartroofingltd.co.uk/#business"},"inLanguage":"en-GB"}]}</script>
 </head>
-<body>
+<body class="has-callbar">
 
 <header>
   <div class="wrap hdr">
     <a href="https://www.estewartroofingltd.co.uk/lp/" aria-label="E Stewart Roofing Ltd"><img src="../assets/logo-hero.webp" alt="E Stewart Roofing Ltd" width="760" height="207"></a>
     <div class="hdr-right">
       <span class="hdr-rate"><svg class="g-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg><b>4.9</b> from 61 reviews</span>
-      <a class="hdr-call" href="tel:01414591536" data-track="call"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Call now</span></a>
+      <a class="hdr-call" href="tel:07464695657" data-track="call"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Call now</span></a>
     </div>
   </div>
 </header>
@@ -586,7 +631,7 @@ body.cc-open .wa-float{bottom:calc(16px + 92px)}
       <h2>Ready for a free, no obligation price?</h2>
       <p class="sub center">Send a photo of the problem and you will get a straight answer on what it needs and what it costs.</p>
       <div class="btns">
-        <a class="btn btn-red" href="tel:01414591536" data-track="call"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call 0141 459 1536</a>
+        <a class="btn btn-red" href="tel:07464695657" data-track="call"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call 07464 695657</a>
         <a class="btn btn-ghost" href="#lp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg> Get my free quote</a>
       </div>
     </div>
@@ -595,13 +640,18 @@ body.cc-open .wa-float{bottom:calc(16px + 92px)}
 
 <footer>
   <img src="../assets/logo.png" alt="E Stewart Roofing Ltd" width="760" height="207" loading="lazy">
-  <p>&copy; <span data-year>2026</span> E Stewart Roofing Ltd &middot; Glasgow &middot; 0141 459 1536</p>
+  <p>&copy; <span data-year>2026</span> E Stewart Roofing Ltd &middot; Glasgow &middot; 07464 695657</p>
   <p style="margin-top:6px">Website by <a href="https://innov8workflows.co.uk" target="_blank" rel="noopener">Innov8 Workflows</a></p>
 </footer>
 
-<a class="wa-float" href="https://wa.me/447464695657" target="_blank" rel="noopener" aria-label="Message us on WhatsApp" data-quiz-wa data-track="whatsapp">
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0 0 20.465 3.488"/></svg>
-</a>
+<!-- Sticky call bar, mobile only: call, or back up to the quiz. There is
+     deliberately NO WhatsApp float on any ad page any more (2026-09-26):
+     it opened a chat with nothing in it, and the ones who did not then type
+     were lost leads the sheet could not chase. -->
+<div class="callbar">
+  <a class="cb-call" href="tel:07464695657" data-track="call"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Call 07464 695657</span></a>
+  <a class="cb-quote" href="#lp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg><span>Get a price</span></a>
+</div>
 
 <!-- Consent gate. GA4 and the Meta pixel are NOT in the head and do not load
      until this is accepted; the lead beacon is not gated, because it stores no
