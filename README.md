@@ -29,7 +29,7 @@ To change anything:
 cd "K:/AI/innov8 Workflows/Claude v4/E Stewart Roofing/site" && node generate.js && node check.js
 ```
 
-Then copy `_site/` over this folder and push. `check.js` must report **no problems**
+Then mirror `_site/` into `public/` (PowerShell: `robocopy <_site> public /MIR /XF _headers`) and push. `check.js` must report **no problems**
 before deploying: it catches dead internal links, missing assets, malformed JSON-LD,
 duplicate titles and descriptions, and pages with the wrong number of `h1` elements.
 
@@ -62,8 +62,10 @@ manual penalty.
 
 ## Deployment
 
-GitHub Actions (`.github/workflows/deploy.yml`), not the legacy Jekyll builder.
-`.nojekyll` is present.
+GitHub Actions (`.github/workflows/deploy.yml`), not the legacy Jekyll builder. It uploads
+**only `public/`**, so this README and the workflow are never served. Every built page
+carries a meta CSP (Pages cannot send headers) and has its developer comments stripped
+by `generate.js`.
 
 ## Domain
 
