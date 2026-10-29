@@ -66,11 +66,31 @@
   };
   function flush() { var c = q.slice(); q.length = 0; c.forEach(function (e) { window.track(e[0], e[1]); }); }
 
+  function clearCookies() {
+    var host = location.hostname.replace(/^www\./, '');
+    var domains = ['', location.hostname, '.' + host];
+    document.cookie.split(';').forEach(function (c) {
+      var name = c.split('=')[0].trim();
+      if (!/^(_ga|_gcl|_fbp|_fbc)/.test(name)) return;
+      domains.forEach(function (dm) {
+        document.cookie = name + '=; Max-Age=0; path=/' + (dm ? '; domain=' + dm : '');
+      });
+    });
+  }
+  function showGate() {
+    if (!gate) return;
+    gate.hidden = false;
+    document.body.classList.add('cc-open');
+    root.style.setProperty('--cc-h', gate.offsetHeight + 'px');
+  }
+
+  var stored = null;
+  try { stored = localStorage.getItem(KEY); } catch (e) {}
+  if (stored === 'yes') { startTrackers(); flush(); }
+  else if (stored === 'no') clearCookies();
+  else showGate();
+
   if (gate) {
-    var stored = null;
-    try { stored = localStorage.getItem(KEY); } catch (e) {}
-    if (stored === 'yes') { startTrackers(); flush(); }
-    else if (stored !== 'no') { gate.hidden = false; document.body.classList.add('cc-open'); }
     gate.addEventListener('click', function (e) {
       var b = e.target && e.target.closest ? e.target.closest('[data-cc]') : null;
       if (!b) return;
@@ -78,13 +98,20 @@
       try { localStorage.setItem(KEY, yes ? 'yes' : 'no'); } catch (e2) {}
       gate.hidden = true;
       document.body.classList.remove('cc-open');
-      if (yes) { startTrackers(); flush(); }
-      else { q.length = 0; }
+      if (yes) { startTrackers(); flush(); return; }
+      q.length = 0;
+      if (gaId) window['ga-disable-' + gaId] = true;
+      if (awId) window['ga-disable-' + awId] = true;
+      clearCookies();
+      if (started) location.reload();
     });
-  } else {
-    startTrackers();
-    flush();
   }
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target.closest('[data-cookie-settings]') : null;
+    if (!t) return;
+    e.preventDefault();
+    showGate();
+  });
 
   var ev = function (name, params) {
     if (window.gtag) window.gtag('event', name, params || {});
