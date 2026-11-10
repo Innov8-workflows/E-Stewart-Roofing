@@ -385,6 +385,13 @@ ul{margin:0;padding:0;list-style:none}
 }
 .rv__dot.on{width:38px}
 .rv__dot.on::before{width:24px;border-radius:100px;background:var(--gold)}
+
+@media(max-width:379px){
+  .rv__nav{gap:4px}
+  .rv__dots{gap:0}
+  .rv__dot.on{width:30px}
+  .rv__dot.on::before{width:18px}
+}
 @media(min-width:860px){.rv__card{flex-basis:33.3333%}}
 
 .ab{display:grid;gap:22px;align-items:center}
